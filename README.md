@@ -14,6 +14,7 @@ Animest is a production-oriented anime discovery, ratings, community, and AI rec
 ## Commands
 
 ```bash
+node --version # must be 24+
 pnpm install
 pnpm dev
 pnpm build

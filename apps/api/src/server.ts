@@ -8,7 +8,7 @@ import http from 'node:http';
 import { randomUUID } from 'node:crypto';
 import pinoHttp from 'pino-http';
 import { Server } from 'socket.io';
-import { envelope, recommendationRequestSchema } from '@animest/shared/index';
+import { envelope, recommendationRequestSchema } from '@animest/shared';
 
 const app = express();
 const server = http.createServer(app);
