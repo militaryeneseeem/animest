@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --brand: 263 85% 62%; --brand-foreground: 0 0% 100%; color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body { @apply min-h-screen bg-slate-950 text-slate-50 antialiased; }
+.glass { @apply border border-white/10 bg-white/10 shadow-glow backdrop-blur-2xl; }

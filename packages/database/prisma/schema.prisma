@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AnimeFormat {
+  TV
+  MOVIE
+  OVA
+  ONA
+  SPECIAL
+  MUSIC
+}
+enum AnimeStatus {
+  ANNOUNCED
+  RELEASING
+  FINISHED
+  CANCELLED
+  HIATUS
+}
+enum WatchStatus {
+  WATCHING
+  COMPLETED
+  PAUSED
+  DROPPED
+  WISHLIST
+}
+enum SpoilerLevel {
+  ZERO
+  ONE
+  TWO
+  THREE
+  FULL
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String    @unique
+  displayName  String
+  bio          String?
+  avatarUrl    String?
+  bannerUrl    String?
+  locale       String    @default("tr")
+  role         String    @default("USER")
+  xp           Int       @default(0)
+  level        Int       @default(1)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  ratings      Rating[]
+  reviews      Review[]
+  watchEntries WatchEntry[]
+  sessions     RefreshSession[]
+  auditLogs    AuditLog[]
+}
+
+model RefreshSession {
+  id          String   @id @default(cuid())
+  userId      String
+  tokenHash   String   @unique
+  deviceLabel String?
+  ipHash      String?
+  expiresAt   DateTime
+  rotatedAt   DateTime?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model Anime {
+  id             String       @id @default(cuid())
+  slug           String       @unique
+  romajiTitle    String
+  englishTitle   String?
+  nativeTitle    String?
+  description    String
+  format         AnimeFormat
+  status         AnimeStatus  @default(ANNOUNCED)
+  startDate      DateTime?
+  endDate        DateTime?
+  season         String?
+  seasonYear     Int?
+  episodeCount   Int?
+  runtimeMinutes Int?
+  ageRating      String?
+  averageRating  Decimal      @default(0) @db.Decimal(4, 2)
+  popularity     Int          @default(0)
+  favoritesCount Int          @default(0)
+  coverImageUrl  String?
+  bannerImageUrl String?
+  source         String?
+  country        String?
+  language       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  aliases        AnimeAlias[]
+  animeTags      AnimeTag[]
+  ratings        Rating[]
+  reviews        Review[]
+  watchEntries   WatchEntry[]
+
+  @@index([seasonYear, season])
+  @@index([format, status])
+  @@index([averageRating, popularity])
+}
+
+model AnimeAlias {
+  id       String @id @default(cuid())
+  animeId  String
+  locale   String?
+  value    String
+  anime    Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  @@index([value])
+}
+
+model Tag {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  name        String
+  category    String
+  description String?
+  animeTags   AnimeTag[]
+}
+
+model AnimeTag {
+  animeId String
+  tagId   String
+  weight  Int    @default(50)
+  anime   Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([animeId, tagId])
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  userId    String
+  animeId   String
+  score     Int
+  reaction  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+  @@index([animeId, score])
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  userId       String
+  animeId      String
+  title        String
+  body         String
+  positives    String[]
+  negatives    String[]
+  spoilerLevel SpoilerLevel @default(ZERO)
+  likesCount   Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime        Anime        @relation(fields: [animeId], references: [id], onDelete: Cascade)
+}
+
+model WatchEntry {
+  id              String      @id @default(cuid())
+  userId          String
+  animeId         String
+  status          WatchStatus
+  progress        Int         @default(0)
+  rewatchCount    Int         @default(0)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime           Anime       @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([actorId, createdAt])
+}
