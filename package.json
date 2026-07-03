@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "description": "Production-grade anime discovery, community, and AI recommendation platform.",
-  "packageManager": "pnpm@6.35.1",
+{
+  "packageManager": "pnpm@10.13.1"
+}
   "engines": {
-    "node": "24.x",
-    "pnpm": "6.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "turbo dev",
