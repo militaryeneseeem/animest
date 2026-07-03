@@ -5,7 +5,7 @@
   "description": "Production-grade anime discovery, community, and AI recommendation platform.",
   "packageManager": "pnpm@6.35.1",
   "engines": {
-    "node": "22.x",
+    "node": "24.x",
     "pnpm": "6.x"
   },
   "scripts": {
