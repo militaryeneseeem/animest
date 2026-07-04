@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AniMest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar" aria-label="Ana menü">
+        <button class="brand" type="button" data-view-target="discover" aria-label="AniMest">
+          <span class="brand-mark">A</span>
+          <span class="brand-copy">
+            <strong>AniMest</strong>
+            <small id="brandHandle">@animemest</small>
+          </span>
+        </button>
+
+        <nav class="nav-list">
+          <button class="nav-item active" type="button" data-view-target="discover">
+            <i data-lucide="search"></i>
+            <span data-i18n="nav.discover">Keşfet</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="library">
+            <i data-lucide="library"></i>
+            <span data-i18n="nav.library">Kütüphanem</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="social">
+            <i data-lucide="users"></i>
+            <span data-i18n="nav.social">Sosyal</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="chat">
+            <i data-lucide="message-circle"></i>
+            <span data-i18n="nav.chat">Sohbet</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="settings">
+            <i data-lucide="settings-2"></i>
+            <span data-i18n="nav.settings">Ayarlar</span>
+          </button>
+        </nav>
+
+        <div class="profile-strip" id="sidebarProfile"></div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" data-i18n="topbar.workspace">Kişisel alan</p>
+            <h1 id="viewTitle">Keşfet</h1>
+          </div>
+          <div class="topbar-actions">
+            <select class="language-select" id="languageSelect" aria-label="Dil seçimi"></select>
+            <button class="icon-button" type="button" id="openAuthButton" data-tooltip="Hesap">
+              <i data-lucide="user-round"></i>
+            </button>
+          </div>
+        </header>
+
+        <section class="view active" id="view-discover" data-title-key="nav.discover">
+          <div class="hero-panel">
+            <img src="assets/animemest-hero.png" alt="" class="hero-image" />
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <div class="hero-text">
+                <p class="eyebrow">AniMest</p>
+                <h2 data-i18n="discover.title">Anime ve manga ara</h2>
+              </div>
+              <div class="hero-metrics" id="heroMetrics"></div>
+            </div>
+          </div>
+
+          <div class="search-workbench">
+            <div class="search-line">
+              <label class="field search-field" for="searchInput">
+                <span data-i18n="discover.keyword">Anahtar kelime</span>
+                <span class="input-shell">
+                  <i data-lucide="search"></i>
+                  <input
+                    id="searchInput"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="Frieren, seinen, spor..."
+                    data-i18n-placeholder="discover.searchPlaceholder"
+                  />
+                </span>
+              </label>
+              <button class="primary-button" type="button" id="runSearchButton">
+                <i data-lucide="sparkles"></i>
+                <span data-i18n="discover.search">Ara</span>
+              </button>
+            </div>
+
+            <div class="filter-grid">
+              <label class="field">
+                <span data-i18n="filters.type">Tür</span>
+                <select id="typeFilter">
+                  <option value="ALL" data-i18n="filters.all">Hepsi</option>
+                  <option value="ANIME">Anime</option>
+                  <option value="MANGA">Manga</option>
+                </select>
+              </label>
+              <label class="field">
+                <span data-i18n="filters.genre">Kategori</span>
+                <select id="genreFilter"></select>
+              </label>
+              <label class="field">
+                <span data-i18n="filters.format">Format</span>
+                <select id="formatFilter"></select>
+              </label>
+              <label class="field">
+                <span data-i18n="filters.year">Yıl</span>
+                <input id="yearFilter" type="number" min="1960" max="2035" placeholder="2024" />
+              </label>
+              <label class="field">
+                <span data-i18n="filters.score">Puan</span>
+                <input id="scoreFilter" type="range" min="0" max="90" step="10" value="0" />
+              </label>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="discover.results">Sonuçlar</p>
+              <h3 id="resultSummary">0 sonuç</h3>
+            </div>
+            <div class="source-pill" id="sourcePill">AniList</div>
+          </div>
+          <div class="media-grid" id="resultsGrid"></div>
+        </section>
+
+        <section class="view" id="view-library" data-title-key="nav.library">
+          <div class="stats-grid" id="libraryStats"></div>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="library.overview">Koleksiyon</p>
+              <h3 data-i18n="library.title">Profil listem</h3>
+            </div>
+            <select id="libraryStatusFilter" class="compact-select" aria-label="Liste durumu"></select>
+          </div>
+          <div class="library-grid" id="libraryGrid"></div>
+        </section>
+
+        <section class="view" id="view-social" data-title-key="nav.social">
+          <div class="profile-hero" id="profileHero"></div>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="social.people">İnsanlar</p>
+              <h3 data-i18n="social.suggestions">Önerilen profiller</h3>
+            </div>
+          </div>
+          <div class="people-grid" id="peopleGrid"></div>
+        </section>
+
+        <section class="view" id="view-chat" data-title-key="nav.chat">
+          <div class="chat-layout">
+            <aside class="chat-list" id="chatList" aria-label="Sohbet listesi"></aside>
+            <section class="chat-window">
+              <div class="chat-head" id="chatHead"></div>
+              <div class="chat-messages" id="chatMessages"></div>
+              <form class="chat-form" id="chatForm">
+                <input
+                  id="chatInput"
+                  type="text"
+                  autocomplete="off"
+                  data-i18n-placeholder="chat.placeholder"
+                  placeholder="Mesaj yaz..."
+                />
+                <button class="primary-button" type="submit" aria-label="Gönder">
+                  <i data-lucide="send"></i>
+                </button>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-settings" data-title-key="nav.settings">
+          <div class="settings-grid">
+            <section class="settings-panel">
+              <p class="eyebrow" data-i18n="settings.account">Hesap</p>
+              <div id="accountSettings"></div>
+            </section>
+            <section class="settings-panel">
+              <p class="eyebrow" data-i18n="settings.language">Dil</p>
+              <label class="field">
+                <span data-i18n="settings.interfaceLanguage">Arayüz dili</span>
+                <select id="settingsLanguageSelect"></select>
+              </label>
+            </section>
+            <section class="settings-panel">
+              <p class="eyebrow" data-i18n="settings.data">Veri</p>
+              <div class="db-status" id="dbStatus"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-rail">
+        <section class="rail-panel">
+          <div class="rail-head">
+            <p class="eyebrow" data-i18n="rail.activity">Aktivite</p>
+            <i data-lucide="activity"></i>
+          </div>
+          <div id="activityFeed"></div>
+        </section>
+        <section class="rail-panel">
+          <div class="rail-head">
+            <p class="eyebrow" data-i18n="rail.following">Takip</p>
+            <i data-lucide="user-check"></i>
+          </div>
+          <div id="followingRail"></div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="modal-backdrop" id="authModal" aria-hidden="true">
+      <section class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="auth-media">
+          <img src="assets/animemest-hero.png" alt="" />
+        </div>
+        <div class="auth-content">
+          <div class="auth-head">
+            <span class="brand-mark">A</span>
+            <div>
+              <p class="eyebrow">AniMest</p>
+              <h2 id="authTitle" data-i18n="auth.title">Hesabına gir</h2>
+            </div>
+          </div>
+
+          <div class="auth-tabs">
+            <button class="active" type="button" data-auth-tab="login" data-i18n="auth.login">Login</button>
+            <button type="button" data-auth-tab="register" data-i18n="auth.register">Kayıt</button>
+          </div>
+
+          <form class="auth-form active" id="loginForm">
+            <label class="field">
+              <span data-i18n="auth.emailOrUser">E-posta veya kullanıcı adı</span>
+              <input id="loginIdentity" type="text" autocomplete="username" required />
+            </label>
+            <label class="field">
+              <span data-i18n="auth.password">Şifre</span>
+              <input id="loginPassword" type="password" autocomplete="current-password" required />
+            </label>
+            <button class="primary-button full" type="submit">
+              <i data-lucide="log-in"></i>
+              <span data-i18n="auth.loginAction">Giriş yap</span>
+            </button>
+            <button class="google-button full" type="button" id="googleLoginButton">
+              <i data-lucide="chrome"></i>
+              <span data-i18n="auth.google">Google ile devam et</span>
+            </button>
+          </form>
+
+          <form class="auth-form" id="registerForm">
+            <label class="field">
+              <span data-i18n="auth.name">Ad</span>
+              <input id="registerName" type="text" autocomplete="name" required />
+            </label>
+            <label class="field">
+              <span data-i18n="auth.username">Kullanıcı adı</span>
+              <input id="registerUsername" type="text" autocomplete="username" required />
+            </label>
+            <label class="field">
+              <span data-i18n="auth.email">E-posta</span>
+              <input id="registerEmail" type="email" autocomplete="email" required />
+            </label>
+            <label class="field">
+              <span data-i18n="auth.password">Şifre</span>
+              <input id="registerPassword" type="password" minlength="6" autocomplete="new-password" required />
+            </label>
+            <button class="google-button full" type="button" id="googleRegisterButton">
+              <i data-lucide="chrome"></i>
+              <span data-i18n="auth.google">Google ile devam et</span>
+            </button>
+            <button class="primary-button full" type="submit">
+              <i data-lucide="user-plus"></i>
+              <span data-i18n="auth.create">Hesap oluştur</span>
+            </button>
+          </form>
+          <p class="form-message" id="authMessage" aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="collectionModal" aria-hidden="true">
+      <section class="edit-card" role="dialog" aria-modal="true" aria-labelledby="collectionTitle">
+        <div class="edit-head">
+          <div>
+            <p class="eyebrow" data-i18n="collection.saveToProfile">Profile ekle</p>
+            <h2 id="collectionTitle">-</h2>
+          </div>
+          <button class="icon-button" type="button" id="closeCollectionModal" aria-label="Kapat">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form class="collection-form" id="collectionForm">
+          <label class="field">
+            <span data-i18n="collection.status">Durum</span>
+            <select id="entryStatus"></select>
+          </label>
+          <div class="form-row">
+            <label class="field">
+              <span data-i18n="collection.progress">Bölüm / chapter</span>
+              <input id="entryProgress" type="number" min="0" value="0" />
+            </label>
+            <label class="field">
+              <span data-i18n="collection.hours">Saat</span>
+              <input id="entryHours" type="number" min="0" step="0.5" value="0" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label class="field">
+              <span data-i18n="collection.started">Başladı</span>
+              <input id="entryStarted" type="date" />
+            </label>
+            <label class="field">
+              <span data-i18n="collection.completed">Bitirdi</span>
+              <input id="entryCompleted" type="date" />
+            </label>
+          </div>
+          <label class="field">
+            <span data-i18n="collection.rating">Puanım</span>
+            <input id="entryRating" type="range" min="0" max="10" step="1" value="0" />
+          </label>
+          <label class="field">
+            <span data-i18n="collection.notes">Not</span>
+            <textarea id="entryNotes" rows="3"></textarea>
+          </label>
+          <button class="primary-button full" type="submit">
+            <i data-lucide="bookmark-plus"></i>
+            <span data-i18n="collection.save">Kaydet</span>
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <template id="mediaCardTemplate">
+      <article class="media-card">
+        <div class="poster-wrap">
+          <img class="poster-image" alt="" loading="lazy" />
+          <div class="poster-fallback"></div>
+          <span class="type-badge"></span>
+        </div>
+        <div class="media-body">
+          <div class="media-title-row">
+            <h4></h4>
+            <span class="score-badge"></span>
+          </div>
+          <p class="media-meta"></p>
+          <div class="genre-list"></div>
+          <p class="media-description"></p>
+          <button class="secondary-button add-button" type="button">
+            <i data-lucide="plus"></i>
+            <span data-i18n="collection.add">Listeye ekle</span>
+          </button>
+        </div>
+      </article>
+    </template>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>
